@@ -1,0 +1,7 @@
+name: EthosGates3
+version: '${project.version}'
+main: ethosgates3.ethosgates3.Main
+api-version: 1.19
+commands:
+  tor:
+    description: Befehl um Tore zu ertellen und zu löschen
