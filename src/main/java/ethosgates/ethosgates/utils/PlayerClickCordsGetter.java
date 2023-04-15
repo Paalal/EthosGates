@@ -39,12 +39,12 @@ public class PlayerClickCordsGetter {
                     ClickInfo clickInfo = clickInfoList.get(i);
                     if (!clickInfo.getPlayer().equals(player)) return;
                     if (x == null) {
-                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         x = new int[]{clickInfo.getX(), 0};
                         y = new int[]{clickInfo.getY(), 0};
                         z = new int[]{clickInfo.getZ(), 0};
                     } else {
-                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         x[1] = clickInfo.getX();
                         y[1] = clickInfo.getY();
                         z[1] = clickInfo.getZ();

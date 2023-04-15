@@ -173,7 +173,7 @@ public class Commands implements CommandExecutor {
                     }
                     break;
                     case "test": {
-                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                        //player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                     }
                     break;
                     default: {
