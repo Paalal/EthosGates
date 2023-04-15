@@ -37,7 +37,7 @@ public class Commands implements CommandExecutor {
                 switch (args[0].toLowerCase()) {
                     case "erstellen": {
                         if (args.length != 2 && args.length != 3 && args.length != 8 && args.length != 9) {
-                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] [Überhang] §6oder /tor erstellen §e[Torname] <Überhanghöhe>");
+                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] <Überhanghöhe> §6oder /tor erstellen §e[Torname] <Überhanghöhe>");
                             return false;
                         }
                         int overhang = 0;

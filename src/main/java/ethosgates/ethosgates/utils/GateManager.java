@@ -296,7 +296,7 @@ public class GateManager {
                     cancel();
                 }
             }
-        }.runTaskTimer(EthosGates.getInstance(), 0, 10);
+        }.runTaskTimer(EthosGates.getInstance(), 0, 5);
         return true;
     }
 

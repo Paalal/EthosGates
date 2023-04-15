@@ -4,13 +4,12 @@ import ethosgates.ethosgates.Commands.GateTabCompleter;
 import ethosgates.ethosgates.Commands.Commands;
 import ethosgates.ethosgates.Listener.ClickListener;
 import ethosgates.ethosgates.Listener.SignListener;
+import ethosgates.ethosgates.utils.GateManager;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
-import ethosgates.ethosgates.utils.GateManager;
 import org.bukkit.Bukkit;
-
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 

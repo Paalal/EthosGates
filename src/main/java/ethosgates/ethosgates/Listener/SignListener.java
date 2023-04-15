@@ -5,6 +5,7 @@ import ethosgates.ethosgates.EthosGates;
 import com.sk89q.worldedit.math.BlockVector3;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
+
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -20,7 +21,6 @@ import java.io.FileFilter;
 import java.util.Objects;
 
 public class SignListener implements Listener {
-
     @EventHandler
     public void onSignChange(final SignChangeEvent e) {
         if (e.getLine(0).equalsIgnoreCase("[TOR]")) {

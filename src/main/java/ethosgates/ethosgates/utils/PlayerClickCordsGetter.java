@@ -1,8 +1,8 @@
 package ethosgates.ethosgates.utils;
 
 import ethosgates.ethosgates.EthosGates;
-
 import ethosgates.ethosgates.Listener.ClickListener;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
