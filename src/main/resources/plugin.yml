@@ -1,6 +1,6 @@
-name: EthosGates3
+name: EthosGates
 version: '${project.version}'
-main: ethosgates3.ethosgates3.Main
+main: ethosgates.ethosgates.EthosGates
 api-version: 1.19
 commands:
   tor:

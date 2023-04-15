@@ -1,4 +1,4 @@
-package ethosgates3.ethosgates3.Commands;
+package ethosgates.ethosgates.Commands;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
@@ -17,7 +17,7 @@ import java.util.*;
 public class GateTabCompleter implements TabCompleter {
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, final String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             Block targ = player.getTargetBlock(null, 5);
@@ -29,17 +29,17 @@ public class GateTabCompleter implements TabCompleter {
                     arguments.add("auflisten");
                     arguments.add("hilfe");
                     return arguments;
-                case 2:
-                case 5:
+                case 2: {
                     if (Objects.equals(args[0], "erstellen")) {
                         List<String> coordinates = new ArrayList<>();
                         coordinates.add(targ.getX() + "");
                         coordinates.add(targ.getX() + " " + targ.getY());
                         coordinates.add(targ.getX() + " " + targ.getY() + " " + targ.getZ());
+                        coordinates.add("[Torname]");
                         return coordinates;
                     } else if (Objects.equals(args[0], "löschen")) {
                         List<String> gateNames = new ArrayList<>();
-                        File dir = new File("./plugins/EthosGates3/");
+                        File dir = new File("./plugins/EthosGates/");
                         FileFilter fileFilter = new RegexFileFilter("^.* " + player.getUniqueId() + ".*$");
                         File[] files = dir.listFiles(fileFilter);
                         if (Objects.requireNonNull(dir.listFiles(fileFilter)).length == 0) {
@@ -48,12 +48,13 @@ public class GateTabCompleter implements TabCompleter {
                         }
                         assert files != null;
                         String pattern = ".*" + player.getUniqueId();
-                        for(File file : files) {
+                        for (File file : files) {
                             String gateName = file.toString().replaceAll(pattern, "");
                             gateNames.add(gateName);
                         }
                         return gateNames;
                     } else return null;
+                }
                 case 3:
                 case 6:
                     List<String> coordinates = new ArrayList<>();
@@ -65,6 +66,13 @@ public class GateTabCompleter implements TabCompleter {
                     coordinates = new ArrayList<>();
                     coordinates.add(targ.getZ() + "");
                     return coordinates;
+                case 5:
+                    coordinates = new ArrayList<>();
+                    coordinates.add(targ.getX() + "");
+                    coordinates.add(targ.getX() + " " + targ.getY());
+                    coordinates.add(targ.getX() + " " + targ.getY() + " " + targ.getZ());
+                    return coordinates;
+
                 case 8: return Collections.singletonList("[Torname]");
             }
         }

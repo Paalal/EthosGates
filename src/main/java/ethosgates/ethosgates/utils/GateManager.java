@@ -1,4 +1,4 @@
-package ethosgates.ethosgates;
+package ethosgates.ethosgates.utils;
 
 
 import com.sk89q.worldedit.EditSession;
@@ -17,8 +17,12 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 
+import ethosgates.ethosgates.EthosGates;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,9 +35,9 @@ import static java.lang.Math.sqrt;
 
 public class GateManager {
 
-    BlockType[] legalBlockList = EthosGates.getLegalBlockList();
+    private BlockType[] legalBlockList = EthosGates.getLegalBlockList();
 
-    public boolean toggleGate(final int gateID, final World world, final BlockVector3 pos, final Player p) {
+    public boolean toggleGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos, final Player p) {
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
         File[] files = dir.listFiles(fileFilter);
@@ -60,7 +64,7 @@ public class GateManager {
         double distance = sqrt(((pos.getX() - m[0]) * (pos.getX() - m[0])) + ((pos.getY() - m[1]) * (pos.getY() - m[1])) + ((pos.getZ() - m[2]) * (pos.getZ() - m[2])));
         if (distance > sqrt(height * width) + 7) {
             p.sendMessage(ChatColor.YELLOW + "Das Tor ist zu weit entfernt!");
-            return false;
+            return true;
         }
         if (Objects.equals(Objects.requireNonNull(gateProperties.get("State")).toString(), "closed")) {
             p.sendMessage("§7öffnet");
@@ -74,7 +78,7 @@ public class GateManager {
         }
     }
 
-    public boolean redstone_open(final int gateID, final World world, final BlockVector3 pos) {
+    public boolean redstoneOpenGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
         File[] files = dir.listFiles(fileFilter);
@@ -105,7 +109,7 @@ public class GateManager {
         return openGate(gateID, world);
     }
 
-    public void redstone_close(final int gateID, final World world, final BlockVector3 pos) {
+    public void redstoneCloseGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
         File[] files = dir.listFiles(fileFilter);
@@ -117,7 +121,7 @@ public class GateManager {
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
-        double width =  1.0 * (int) gateProperties.get("Dimensions.Height");
+        double width =  1.0 * (int) gateProperties.get("Dimensions.Width");
 
         Object[] BlockVectorMaxArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMax").toArray();
         BlockVector3 max = BlockVector3.at(Integer.parseInt(BlockVectorMaxArray[0].toString()), Integer.parseInt(BlockVectorMaxArray[1].toString()), Integer.parseInt(BlockVectorMaxArray[2].toString()));
@@ -136,7 +140,7 @@ public class GateManager {
         closeGate(gateID, world);
     }
 
-    public boolean openGate(final int gateID, final World world) {
+    public boolean openGate(final int gateID, final org.bukkit.World world) {
         //get gate properties
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
@@ -161,6 +165,16 @@ public class GateManager {
         Object[] BlockVectorMinArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMin").toArray();
         BlockVector3 min = BlockVector3.at(Integer.parseInt(BlockVectorMinArray[0].toString()), Integer.parseInt(BlockVectorMinArray[1].toString()), Integer.parseInt(BlockVectorMinArray[2].toString()));
         int height = gateProperties.getInt("Dimensions.Height");
+        int width = gateProperties.getInt("Dimensions.Width");
+        int overhang = gateProperties.getInt("Overhang");
+        int[] m;
+        if (min.getX() == max.getX()) {
+            m = new int[]{min.getX(), (int) (min.getY() + (height / 2 + width / 2) / 2), (int) (min.getZ() + (height / 2 + width / 2) / 2)};
+        } else {
+            m = new int[]{(int) (min.getX() + (height / 2 + width / 2) / 2), (int) (min.getY() + (height / 2 + width / 2) / 2), min.getZ()};
+        }
+        Location location = new Location(world , 1.0 * m[0],1.0 * m[1], 1.0 * m[2]);
+
         dir = new File(dir, "/schematics/");
         //open-gate-logic
         final Clipboard[] clipboard = {null};
@@ -170,6 +184,10 @@ public class GateManager {
             @Override
             public void run() {
                 for (int row = 0; row < height; row++) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(location, Sound.ITEM_ARMOR_EQUIP_CHAIN, 0.5F, 1F);
+                        player.playSound(location, Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1F, 1F);
+                    }
                     if (row - step >= 0) {
                         if (step - row == 0) {
                             clipboard[0] = loadSchematic(finalDir, "air");
@@ -178,16 +196,17 @@ public class GateManager {
                         }
                         BlockVector3 pos1 = BlockVector3.at(min.getX(), min.getY() + row, min.getZ());
                         BlockVector3 pos2 = BlockVector3.at(max.getX(), min.getY() + row, max.getZ());
-                        boolean success = saveRowSchematic(world, pos1, pos2, finalDir, String.valueOf(row - step + 1));
-                        pasteSchematic(clipboard[0], pos1, world);
+                        boolean success = saveRowSchematic( BukkitAdapter.adapt(world), pos1, pos2, finalDir, String.valueOf(row - step + 1));
+                        pasteSchematic(clipboard[0], pos1, BukkitAdapter.adapt(world));
                         if (!success) {
                             deleteGate(new File (finalDir.getPath().replace("schematics", ""), ""));
                             cancel();
                         }
                     }
+
                 }
                 step++;
-                if (step == height) {
+                if (step + overhang == height) {
                     gateProperties.set("State", "open");
                     try {
                         gateProperties.save(gatePropertiesFile);
@@ -201,7 +220,7 @@ public class GateManager {
         return true;
     }
 
-    public boolean closeGate(final int gateID, final World world) {
+    public boolean closeGate(final int gateID, final org.bukkit.World world) {
         //get gate properties
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
@@ -226,26 +245,40 @@ public class GateManager {
         Object[] BlockVectorMinArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMin").toArray();
         BlockVector3 min = BlockVector3.at(Integer.parseInt(BlockVectorMinArray[0].toString()), Integer.parseInt(BlockVectorMinArray[1].toString()), Integer.parseInt(BlockVectorMinArray[2].toString()));
         int height = gateProperties.getInt("Dimensions.Height");
+        int width = gateProperties.getInt("Dimensions.Width");
+        int overhang = gateProperties.getInt("Overhang");
+        int[] m;
+        if (min.getX() == max.getX()) {
+            m = new int[]{min.getX(), (int) (min.getY() + (height / 2 + width / 2) / 2), (int) (min.getZ() + (height / 2 + width / 2) / 2)};
+        } else {
+            m = new int[]{(int) (min.getX() + (height / 2 + width / 2) / 2), (int) (min.getY() + (height / 2 + width / 2) / 2), min.getZ()};
+        }
+        Location location = new Location(world , 1.0 * m[0],1.0 * m[1], 1.0 * m[2]);
+
         dir = new File(dir, "/schematics/");
         //close-gate-logic
         final Clipboard[] clipboard = {null};
         File finalDir = dir;
         new BukkitRunnable() {
-            int step = 1;
+            int step = 1 + overhang;
             @Override
             public void run() {
                 for (int row = 0; row < height; row++) {
                     BlockVector3 pos1 = BlockVector3.at(min.getX(), max.getY() - row, min.getZ());
                     BlockVector3 pos2 = BlockVector3.at(max.getX(), max.getY() - row, max.getZ());
                     if (step - row > 1) {
-                        if (!saveRowSchematic(world, pos1, pos2, finalDir, String.valueOf(step - row - 1))) {
+                        if (!saveRowSchematic(BukkitAdapter.adapt(world), pos1, pos2, finalDir, String.valueOf(step - row - 1))) {
                             deleteGate(new File(finalDir.getPath().replace("schematics", ""), ""));
                             cancel();
                         }
                     }
                     if (step - row > 0) {
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.playSound(location, Sound.ITEM_ARMOR_EQUIP_CHAIN, 0.5F, 1F);
+                            player.playSound(location, Sound.ITEM_ARMOR_EQUIP_NETHERITE, 1F, 1F);
+                        }
                         clipboard[0] = loadSchematic(finalDir, Integer.toString(step - row));
-                        pasteSchematic(clipboard[0], pos1, world);
+                        pasteSchematic(clipboard[0], pos1, BukkitAdapter.adapt(world));
                     }
                 }
                 step++;
@@ -256,14 +289,18 @@ public class GateManager {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(location, Sound.BLOCK_ANVIL_PLACE, 0.3F, 1F);
+                        player.playSound(location, Sound.BLOCK_LANTERN_PLACE, 1F, 0.5F);
+                    }
                     cancel();
                 }
             }
-        }.runTaskTimer(EthosGates.getInstance(), 0, 20);
+        }.runTaskTimer(EthosGates.getInstance(), 0, 10);
         return true;
     }
 
-    public boolean createGate(final Player p, final BlockVector3 maximum, final BlockVector3 minimum, final File dir) {
+    public boolean createGate(final Player p, final BlockVector3 maximum, final BlockVector3 minimum, int overhang, final File dir) {
         World world = BukkitAdapter.adapt(p.getWorld());
         if (!saveGateSchematics(world, maximum, minimum, dir)) {
             return false;
@@ -288,6 +325,7 @@ public class GateManager {
         int width = (maximum.getX() - minimum.getX()) + (maximum.getZ() - minimum.getZ()) + 1;
         config.set("Dimensions.Height", height);
         config.set("Dimensions.Width", width);
+        config.set("Overhang", overhang);
         config.set("State", "closed");
 
         try {

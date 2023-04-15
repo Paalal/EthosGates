@@ -1,57 +1,56 @@
-package ethosgates3.ethosgates3;
+package ethosgates.ethosgates;
 
-import ethosgates3.ethosgates3.Commands.Commands;
-import ethosgates3.ethosgates3.Commands.GateTabCompleter;
-import ethosgates3.ethosgates3.Listener.SignListener;
-import ethosgates3.ethosgates3.utils.Config;
+import ethosgates.ethosgates.Commands.GateTabCompleter;
+import ethosgates.ethosgates.Commands.Commands;
+import ethosgates.ethosgates.Listener.ClickListener;
+import ethosgates.ethosgates.Listener.SignListener;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import ethosgates.ethosgates.utils.GateManager;
 import org.bukkit.Bukkit;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
-public final class Main extends JavaPlugin {
+public final class EthosGates extends JavaPlugin {
 
     private static int currentGateID;
-
-    private Config config;
+    private FileConfiguration config;
 
     private static BlockType[] legalBlockList;
 
-    private static Main instance;
+    private static EthosGates instance;
     private static GateManager gateManager;
-
     @Override
     public void onLoad() {
         instance = this;
-        config = new Config();
-        if (config.getConfig().contains("GateID.ID")) {
-            currentGateID = config.getConfig().getInt("GateID.ID");
+        config = this.getConfig();
+        if (config.contains("GateID.ID")) {
+            currentGateID = config.getInt("GateID.ID");
         } else {
             currentGateID = 0;
         }
-
     }
 
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new SignListener(), this);
+        Bukkit.getPluginManager().registerEvents(new ClickListener(), this);
         Objects.requireNonNull(getCommand("tor")).setExecutor(new Commands());
         Objects.requireNonNull(getCommand("tor")).setTabCompleter(new GateTabCompleter());
-        if (config.getConfig().contains("LegalBlockList")) {
-            System.out.println("contains");
-           Object[] l = config.getConfig().getStringList("LegalBlockList").toArray();
+        if (config.contains("LegalBlockList")) {
+           Object[] l = config.getStringList("LegalBlockList").toArray();
            legalBlockList = new BlockType[l.length];
             for (int i = 0; i < l.length; i++) {
                 legalBlockList[i] = BlockTypes.get(l[i].toString());
             }
         } else {
-            System.out.println("doesnt contain");
             legalBlockList = new BlockType[]{
+                    BlockTypes.IRON_BARS,
                     BlockTypes.OAK_FENCE,
                     BlockTypes.DARK_OAK_FENCE,
                     BlockTypes.SPRUCE_FENCE,
@@ -81,6 +80,7 @@ public final class Main extends JavaPlugin {
                     BlockTypes.END_STONE_BRICK_WALL
             };
             String[] legalBlockListString = {
+                    "minecraft:iron_bars",
                     "minecraft:oak_fence",
                     "minecraft:dark_oak_fence",
                     "minecraft:spruce_fence",
@@ -91,7 +91,7 @@ public final class Main extends JavaPlugin {
                     "minecraft:mangrove_fence",
                     "minecraft:crimson_fence",
                     "minecraft:cobblestone_wall",
-                    "minecraft:mossy_cobble_wall",
+                    "minecraft:mossy_cobblestone_wall",
                     "minecraft:stone_brick_wall",
                     "minecraft:mossy_stone_brick_wall",
                     "minecraft:granite_wall",
@@ -109,13 +109,13 @@ public final class Main extends JavaPlugin {
                     "minecraft:polished_blackstone_wall",
                     "minecraft:end_stone_brick_wall"
             };
-            config.getConfig().set("LegalBlockList", legalBlockListString);
-            config.save();
+            config.set("LegalBlockList", legalBlockListString);
+            saveConfig();
         }
         gateManager = new GateManager();
     }
 
-    public static Main getInstance() {
+    public static EthosGates getInstance() {
         return instance;
     }
 
@@ -135,8 +135,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         //config.getConfig().set("LegalBlockList", legalBlockList);
-        config.getConfig().set("GateID.ID", currentGateID);
-        config.save();
+        config.set("GateID.ID", currentGateID);
+        saveConfig();
     }
 
     public static BlockType[] getLegalBlockList() {

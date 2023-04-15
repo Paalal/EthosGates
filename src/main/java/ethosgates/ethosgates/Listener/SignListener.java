@@ -1,13 +1,12 @@
-package ethosgates3.ethosgates3.Listener;
+package ethosgates.ethosgates.Listener;
 
-import ethosgates3.ethosgates3.Main;
+import ethosgates.ethosgates.EthosGates;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.world.World;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,11 +22,11 @@ import java.util.Objects;
 public class SignListener implements Listener {
 
     @EventHandler
-    public void onSignChange(SignChangeEvent e) {
+    public void onSignChange(final SignChangeEvent e) {
         if (e.getLine(0).equalsIgnoreCase("[TOR]")) {
             Player p = e.getPlayer();
             String gateName = e.getLine(1);
-            File dir = new File("./plugins/EthosGates3/");
+            File dir = new File("./plugins/EthosGates/");
             FileFilter fileFilter = new RegexFileFilter("^.* " + p.getUniqueId() + gateName + "$");
             File[] files = dir.listFiles(fileFilter);
             if (Objects.requireNonNull(files).length != 1) {
@@ -35,7 +34,7 @@ public class SignListener implements Listener {
                 return;
             }
             dir = Objects.requireNonNull(files)[0];
-            String pattern = ".[/\\\\]plugins[/\\\\]EthosGates3[/\\\\]";
+            String pattern = ".[/\\\\]plugins[/\\\\]EthosGates[/\\\\]";
             String ID = dir.toString().replaceAll(pattern, "");
             pattern = " " + p.getUniqueId() + gateName;
             ID = ID.replaceAll(pattern, "");
@@ -46,8 +45,8 @@ public class SignListener implements Listener {
     }
 
     @EventHandler
-    public void onRedstoneChange(BlockPhysicsEvent e) {
-        if(e.getBlock().getState() instanceof Sign) {
+    public void onRedstoneChange(final BlockPhysicsEvent e) {
+        if (e.getBlock().getState() instanceof Sign) {
             Sign sign = (Sign) e.getBlock().getState();
             if (sign.getLine(0).equals((ChatColor.DARK_RED + "[TOR]"))) {
                 boolean oldPower = Boolean.parseBoolean(sign.getLine(2));
@@ -55,17 +54,17 @@ public class SignListener implements Listener {
                     sign.setLine(2, "true");
                     sign.update();
                     int ID = Integer.parseInt(sign.getLine(1));
-                    World world = BukkitAdapter.adapt(sign.getWorld());
+                    World world = sign.getWorld();
                     BlockVector3 pos = BlockVector3.at(sign.getX(), sign.getY(), sign.getZ());
-                    Main.getGateManager().redstone_open(ID, world, pos);
+                    EthosGates.getGateManager().redstoneOpenGate(ID, world, pos);
                 } else {
                     if (!sign.getBlock().isBlockPowered() && oldPower) {
                         sign.setLine(2, Boolean.toString(false));
                         sign.update();
                         int ID = Integer.parseInt(sign.getLine(1));
-                        World world = BukkitAdapter.adapt(sign.getWorld());
+                        World world = sign.getWorld();
                         BlockVector3 pos = BlockVector3.at(sign.getX(), sign.getY(), sign.getZ());
-                        Main.getGateManager().redstone_close(ID, world, pos);
+                        EthosGates.getGateManager().redstoneCloseGate(ID, world, pos);
                     }
                 }
             }
@@ -73,16 +72,16 @@ public class SignListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
-        if(e.getClickedBlock() == null)return;
-        if(e.getClickedBlock().getState() instanceof Sign) {
+    public void onPlayerInteract(final PlayerInteractEvent e) {
+        if (e.getClickedBlock() == null) return;
+        if (e.getClickedBlock().getState() instanceof Sign) {
             Sign sign = (Sign) e.getClickedBlock().getState();
             if (sign.getLine(0).equalsIgnoreCase(ChatColor.DARK_RED + "[TOR]")) {
                 Player p = e.getPlayer();
                 int ID = Integer.parseInt(sign.getLine(1));
-                World world = BukkitAdapter.adapt(e.getClickedBlock().getWorld());
+                World world = e.getClickedBlock().getWorld();
                 BlockVector3 pos = BlockVector3.at(e.getClickedBlock().getX(), e.getClickedBlock().getY(), e.getClickedBlock().getZ());
-                if (!Main.getGateManager().toggleGate(ID, world, pos, p)) {
+                if (!EthosGates.getGateManager().toggleGate(ID, world, pos, p)) {
                     p.sendMessage("§cEs kann mit dem Tor mit der TorID: §4" + ID + " §cnicht interagiert werden!");
                 }
             }
