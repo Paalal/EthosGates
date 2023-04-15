@@ -36,14 +36,20 @@ public class Commands implements CommandExecutor {
                 }
                 switch (args[0].toLowerCase()) {
                     case "erstellen": {
-                        if (args.length != 9 && args.length != 3) {
-                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname]");
+                        if (args.length != 2 && args.length != 3 && args.length != 8 && args.length != 9) {
+                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] [Überhang] §6oder /tor erstellen §e[Torname] <Überhanghöhe>");
                             return false;
                         }
-
-                        if (args.length == 3) {
-                            int overhang = Integer.parseInt(args[2]);
-
+                        int overhang = 0;
+                        if (args.length < 4 ) {
+                            if (args.length == 3) {
+                                try {
+                                    overhang = Integer.parseInt(args[2]);
+                                } catch (NumberFormatException e) {
+                                    e.printStackTrace();
+                                    player.sendMessage("§cDie Überhanghöhe muss eine positive Ganzzahl sein");
+                                }
+                            }
                             String gateName = args[1];
                             File dir = new File("./plugins/EthosGates/");
                             //check if gateName already exists
@@ -70,7 +76,7 @@ public class Commands implements CommandExecutor {
                             y = new int[]{Integer.parseInt(args[2]), Integer.parseInt(args[5])};
                             z = new int[]{Integer.parseInt(args[3]), Integer.parseInt(args[6])};
                         } catch (NumberFormatException e) {
-                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname]");
+                            player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] <Überhanghöhe>");
                             e.printStackTrace();
                         }
                         Arrays.sort(x);
@@ -80,8 +86,8 @@ public class Commands implements CommandExecutor {
                         BlockVector3 min = BlockVector3.at(x[0], y[0], z[0]);
 
                         //check if gate has valid dimensions
-                        if (!(((max.getX() == min.getX() && max.getZ() - min.getZ() > 0 && (max.getZ() - min.getZ()) * (max.getY() - min.getY()) < 25) || (max.getZ() == min.getZ() && max.getX() - min.getX() > 0 && (max.getX() - min.getX()) * (max.getY() - min.getY()) < 36)) && max.getY() - min.getY() > 1)) {
-                            player.sendMessage("§cDas Tor muss mindestens §43 Blöcke hoch §cund §42 Blöcke breit §csein, aber §4nicht größer als 36 Blöcke§c!");
+                        if (!(((max.getX() == min.getX() && max.getZ() - min.getZ() > 0 && (max.getZ() - min.getZ()) * (max.getY() - min.getY()) < 100) || (max.getZ() == min.getZ() && max.getX() - min.getX() > 0 && (max.getX() - min.getX()) * (max.getY() - min.getY()) < 100)) && max.getY() - min.getY() > 1)) {
+                            player.sendMessage("§cDas Tor muss mindestens §43 Blöcke hoch §cund §42 Blöcke breit §csein, aber §4nicht größer als 100 Blöcke§c!");
                             return false;
                         }
 
@@ -99,13 +105,27 @@ public class Commands implements CommandExecutor {
                             return false;
                         }
 
-                        int overhang = Integer.parseInt(args[8]);
+                        final String gateDir = dir.toString().replace("/schematics", "").replace("\\schematics", "");
+                        if (args.length == 9) {
+                            try {
+                                if (!((overhang = Integer.parseInt(args[8])) < max.getY() - min.getY() - 1)) {
+                                    player.sendMessage("§cIm offenen Zustand muss das Tor mindestens §43 Blöcke hoch frei §csein. ");
+                                    EthosGates.getGateManager().deleteGate(new File(gateDir));
+                                    return true;
+                                }
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                                player.sendMessage("§cDie Überhanghöhe muss eine positive Ganzzahl sein");
+                                EthosGates.getGateManager().deleteGate(new File(gateDir));
+                                return true;
+                            }
+                        }
 
                         if (EthosGates.getGateManager().createGate(player, max, min, overhang, dir)) {
                             EthosGates.increaseCurrentGateID();
                             player.sendMessage("§7Das Tor §8" + gateName + " §7wurde erfolgreich erstellt.");
                         } else {
-                            EthosGates.getGateManager().deleteGate(new File(dir.toString().replace("/schematics","").replace("\\schematics", "")));
+                            EthosGates.getGateManager().deleteGate(new File(gateDir));
                             player.sendMessage("§cUnerwarteter Fehler beim erstellen des Tors. §4§lVersuche es bitte erneut und achte darauf, dass das Tor beim Erstellen geschlossen ist. §r§cSollte dieser Fehler trotzdem wieder auftreten, wende dich bitte an den Support (/ch s)");
                         }
                         break;

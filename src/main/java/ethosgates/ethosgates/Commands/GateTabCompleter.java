@@ -29,7 +29,7 @@ public class GateTabCompleter implements TabCompleter {
                     arguments.add("auflisten");
                     arguments.add("hilfe");
                     return arguments;
-                case 2: {
+                case 2:
                     if (Objects.equals(args[0], "erstellen")) {
                         List<String> coordinates = new ArrayList<>();
                         coordinates.add(targ.getX() + "");
@@ -53,27 +53,39 @@ public class GateTabCompleter implements TabCompleter {
                             gateNames.add(gateName);
                         }
                         return gateNames;
-                    } else return null;
-                }
-                case 3:
-                case 6:
+                    } else return Collections.singletonList("");
+                case 3: if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
+                    if (!Objects.equals(args[1], targ.getX() + "")) return Collections.singletonList("[ÜberhangHöhe]");
                     List<String> coordinates = new ArrayList<>();
                     coordinates.add(targ.getY() + "");
                     coordinates.add(targ.getY() + " " + targ.getZ());
                     return coordinates;
                 case 4:
                 case 7:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
                     coordinates = new ArrayList<>();
                     coordinates.add(targ.getZ() + "");
                     return coordinates;
                 case 5:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
                     coordinates = new ArrayList<>();
                     coordinates.add(targ.getX() + "");
                     coordinates.add(targ.getX() + " " + targ.getY());
                     coordinates.add(targ.getX() + " " + targ.getY() + " " + targ.getZ());
                     return coordinates;
-
-                case 8: return Collections.singletonList("[Torname]");
+                case 6:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
+                    coordinates = new ArrayList<>();
+                    coordinates.add(targ.getY() + "");
+                    coordinates.add(targ.getY() + " " + targ.getZ());
+                    return coordinates;
+                case 8:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
+                    return Collections.singletonList("[Torname]");
+                case 9:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
+                    return Collections.singletonList("[ÜberhangHöhe]");
+                default: return Collections.singletonList("");
             }
         }
         return null;

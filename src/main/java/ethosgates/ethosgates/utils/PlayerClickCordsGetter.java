@@ -39,10 +39,10 @@ public class PlayerClickCordsGetter {
                     ClickInfo clickInfo = clickInfoList.get(i);
                     if (!clickInfo.getPlayer().equals(player)) return;
                     if (x == null) {
+                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         x = new int[]{clickInfo.getX(), 0};
                         y = new int[]{clickInfo.getY(), 0};
                         z = new int[]{clickInfo.getZ(), 0};
-                        player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                     } else {
                         player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         x[1] = clickInfo.getX();
@@ -53,6 +53,15 @@ public class PlayerClickCordsGetter {
                         Arrays.sort(z);
                         BlockVector3 max = BlockVector3.at(x[1], y[1], z[1]);
                         BlockVector3 min = BlockVector3.at(x[0], y[0], z[0]);
+
+                        if (!(overhang < max.getY() - min.getY() - 1)) {
+                            player.sendMessage("§cIm offenen Zustand muss das Tor mindestens §43 Blöcke hoch frei §csein. ");
+                            EthosGates.getGateManager().deleteGate(new File(gateDir));
+                            ClickListener.deactivate();
+                            cancel();
+                            return;
+                        }
+
                         if (!(((max.getX() == min.getX() && max.getZ() - min.getZ() > 0 && (max.getZ() - min.getZ()) * (max.getY() - min.getY()) < 100) || (max.getZ() == min.getZ() && max.getX() - min.getX() > 0 && (max.getX() - min.getX()) * (max.getY() - min.getY()) < 100)) && max.getY() - min.getY() > 1)) {
                             player.sendMessage("§cDas Tor muss mindestens §43 Blöcke hoch §cund §42 Blöcke breit §csein, aber §4nicht größer als 100 Blöcke§c!");
                             EthosGates.getGateManager().deleteGate(new File(gateDir));
@@ -73,7 +82,7 @@ public class PlayerClickCordsGetter {
                 }
                 if (repetitions++ >= 200) {
                     EthosGates.getGateManager().deleteGate(new File(gateDir));
-                    player.sendMessage("§cTor Erstellung abgebrochen");
+                    player.sendMessage("§cTor Erstellung abgelaufen");
                     ClickListener.deactivate();
                     cancel();
                 }
