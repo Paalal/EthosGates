@@ -49,7 +49,7 @@ public class GateManager {
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
-        double width =  1.0 * (int) gateProperties.get("Dimensions.Height");
+        double width =  1.0 * (int) gateProperties.get("Dimensions.Width");
 
         Object[] BlockVectorMaxArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMax").toArray();
         BlockVector3 max = BlockVector3.at(Integer.parseInt(BlockVectorMaxArray[0].toString()), Integer.parseInt(BlockVectorMaxArray[1].toString()), Integer.parseInt(BlockVectorMaxArray[2].toString()));
@@ -57,10 +57,15 @@ public class GateManager {
         BlockVector3 min = BlockVector3.at(Integer.parseInt(BlockVectorMinArray[0].toString()), Integer.parseInt(BlockVectorMinArray[1].toString()), Integer.parseInt(BlockVectorMinArray[2].toString()));
         int[] m;
         if (min.getX() == max.getX()) {
-            m = new int[]{min.getX(), (int) (min.getY() + (height / 2 + width / 2) / 2), (int) (min.getZ() + (height / 2 + width / 2) / 2)};
+            m = new int[]{min.getX(), (int) (min.getY() + (height) / 2), (int) (min.getZ() + (width) / 2)};
         } else {
-            m = new int[]{(int) (min.getX() + (height / 2 + width / 2) / 2), (int) (min.getY() + (height / 2 + width / 2) / 2), min.getZ()};
+            m = new int[]{(int) (min.getX() + (width) / 2), (int) (min.getY() + (height) / 2), min.getZ()};
         }
+
+        p.sendMessage(Arrays.toString(m));
+        p.sendMessage(min.toString());
+        p.sendMessage(max.toString());
+
         double distance = sqrt(((pos.getX() - m[0]) * (pos.getX() - m[0])) + ((pos.getY() - m[1]) * (pos.getY() - m[1])) + ((pos.getZ() - m[2]) * (pos.getZ() - m[2])));
         if (distance > sqrt(height * width) + 7) {
             p.sendMessage(ChatColor.YELLOW + "Das Tor ist zu weit entfernt!");
@@ -90,7 +95,7 @@ public class GateManager {
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
-        double width =  1.0 * (int) gateProperties.get("Dimensions.Height");
+        double width =  1.0 * (int) gateProperties.get("Dimensions.Width");
 
         Object[] BlockVectorMaxArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMax").toArray();
         BlockVector3 max = BlockVector3.at(Integer.parseInt(BlockVectorMaxArray[0].toString()), Integer.parseInt(BlockVectorMaxArray[1].toString()), Integer.parseInt(BlockVectorMaxArray[2].toString()));
@@ -169,9 +174,9 @@ public class GateManager {
         int overhang = gateProperties.getInt("Overhang");
         int[] m;
         if (min.getX() == max.getX()) {
-            m = new int[]{min.getX(), (int) (min.getY() + (height / 2 + width / 2) / 2), (int) (min.getZ() + (height / 2 + width / 2) / 2)};
+            m = new int[]{min.getX(), (int) (min.getY() + (height) / 2), (int) (min.getZ() + (width) / 2)};
         } else {
-            m = new int[]{(int) (min.getX() + (height / 2 + width / 2) / 2), (int) (min.getY() + (height / 2 + width / 2) / 2), min.getZ()};
+            m = new int[]{(int) (min.getX() + (width) / 2), (int) (min.getY() + (height) / 2), min.getZ()};
         }
         Location location = new Location(world , 1.0 * m[0],1.0 * m[1], 1.0 * m[2]);
 
@@ -239,6 +244,7 @@ public class GateManager {
             gateProperties.save(gatePropertiesFile);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         Object[] BlockVectorMaxArray = gateProperties.getIntegerList("BlockVectors.BlockVectorMax").toArray();
         BlockVector3 max = BlockVector3.at(Integer.parseInt(BlockVectorMaxArray[0].toString()), Integer.parseInt(BlockVectorMaxArray[1].toString()), Integer.parseInt(BlockVectorMaxArray[2].toString()));
@@ -249,9 +255,9 @@ public class GateManager {
         int overhang = gateProperties.getInt("Overhang");
         int[] m;
         if (min.getX() == max.getX()) {
-            m = new int[]{min.getX(), (int) (min.getY() + (height / 2 + width / 2) / 2), (int) (min.getZ() + (height / 2 + width / 2) / 2)};
+            m = new int[]{min.getX(), (int) (min.getY() + (height) / 2), (int) (min.getZ() + (width) / 2)};
         } else {
-            m = new int[]{(int) (min.getX() + (height / 2 + width / 2) / 2), (int) (min.getY() + (height / 2 + width / 2) / 2), min.getZ()};
+            m = new int[]{(int) (min.getX() + (width) / 2), (int) (min.getY() + (height) / 2), min.getZ()};
         }
         Location location = new Location(world , 1.0 * m[0],1.0 * m[1], 1.0 * m[2]);
 
@@ -270,6 +276,7 @@ public class GateManager {
                         if (!saveRowSchematic(BukkitAdapter.adapt(world), pos1, pos2, finalDir, String.valueOf(step - row - 1))) {
                             deleteGate(new File(finalDir.getPath().replace("schematics", ""), ""));
                             cancel();
+                            break;
                         }
                     }
                     if (step - row > 0) {
