@@ -6,11 +6,14 @@ import ethosgates.ethosgates.utils.PlayerClickCordsGetter;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -173,7 +176,13 @@ public class Commands implements CommandExecutor {
                     }
                     break;
                     case "test": {
-                        //player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                        List<Entity> entitys = Bukkit.selectEntities(player, "@e[tag=test]");
+                        for (Entity entity : entitys) {
+                            entity.teleport(player.getLocation());
+                        }
+                        Location playerLocation = player.getLocation();
+                        Location location = new Location(player.getWorld(), playerLocation.getX(), playerLocation.getY() - 1, playerLocation.getZ());
+                        Block block = location.getBlock();
                     }
                     break;
                     default: {

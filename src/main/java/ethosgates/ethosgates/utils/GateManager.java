@@ -62,10 +62,6 @@ public class GateManager {
             m = new int[]{(int) (min.getX() + (width) / 2), (int) (min.getY() + (height) / 2), min.getZ()};
         }
 
-        p.sendMessage(Arrays.toString(m));
-        p.sendMessage(min.toString());
-        p.sendMessage(max.toString());
-
         double distance = sqrt(((pos.getX() - m[0]) * (pos.getX() - m[0])) + ((pos.getY() - m[1]) * (pos.getY() - m[1])) + ((pos.getZ() - m[2]) * (pos.getZ() - m[2])));
         if (distance > sqrt(height * width) + 7) {
             p.sendMessage(ChatColor.YELLOW + "Das Tor ist zu weit entfernt!");
@@ -204,8 +200,9 @@ public class GateManager {
                         boolean success = saveRowSchematic( BukkitAdapter.adapt(world), pos1, pos2, finalDir, String.valueOf(row - step + 1));
                         pasteSchematic(clipboard[0], pos1, BukkitAdapter.adapt(world));
                         if (!success) {
-                            deleteGate(new File (finalDir.getPath().replace("schematics", ""), ""));
                             cancel();
+                            deleteGate(new File (finalDir.getPath().replace("schematics", ""), ""));
+                            return;
                         }
                     }
 
