@@ -36,7 +36,7 @@ public class SignListener implements Listener {
 
     @EventHandler
     public void onSignChange(final SignChangeEvent e) {
-        if (!e.getLine(0).equalsIgnoreCase("[TOR]")) return;
+        if (!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("[TOR]")) return;
         Player p = e.getPlayer();
         String gateName = e.getLine(1);
         File dir = new File("./plugins/EthosGates/");
@@ -91,16 +91,15 @@ public class SignListener implements Listener {
         if (!sign.getLine(0).equalsIgnoreCase("§b[TOR]")) return;
         World world = sign.getWorld();
         Player p = e.getPlayer();
-        {
-            com.sk89q.worldedit.util.Location location = new com.sk89q.worldedit.util.Location(BukkitAdapter.adapt(world), sign.getX(), sign.getY(), sign.getZ());
-            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
-            RegionQuery query = container.createQuery();
-            ApplicableRegionSet set = query.getApplicableRegions(location);
-            LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(p);
-            if (!set.testState(localPlayer, Flags.BUILD)) {
-                p.sendMessage("§cDu darfst das hier nicht tun!");
-                return;
-            }
+
+        com.sk89q.worldedit.util.Location worldeditLocation = new com.sk89q.worldedit.util.Location(BukkitAdapter.adapt(world), sign.getX(), sign.getY(), sign.getZ());
+        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(worldeditLocation);
+        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(p);
+        if (!set.testState(localPlayer, Flags.BUILD)) {
+            p.sendMessage("§cDu darfst das hier nicht tun!");
+            return;
         }
 
         org.bukkit.Location location = sign.getLocation();

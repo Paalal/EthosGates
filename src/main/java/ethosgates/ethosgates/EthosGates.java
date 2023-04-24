@@ -133,7 +133,6 @@ public final class EthosGates extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //config.getConfig().set("LegalBlockList", legalBlockList);
         config.set("GateID.ID", currentGateID);
         saveConfig();
     }
