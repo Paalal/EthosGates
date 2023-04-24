@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
 
-public class GateTabCompleter implements TabCompleter {
+public class TabCompleter implements org.bukkit.command.TabCompleter {
 
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, final String[] args) {

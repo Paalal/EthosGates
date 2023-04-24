@@ -6,14 +6,10 @@ import ethosgates.ethosgates.utils.PlayerClickCordsGetter;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import org.apache.commons.io.filefilter.RegexFileFilter;
@@ -34,7 +30,7 @@ public class Commands implements CommandExecutor {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
                 if (args.length == 0) {
-                    player.sendMessage("§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e>");
+                    player.sendMessage("§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e|§6hilfe§e>");
                     return false;
                 }
                 switch (args[0].toLowerCase()) {
@@ -58,7 +54,7 @@ public class Commands implements CommandExecutor {
                             //check if gateName already exists
                             FileFilter fileFilter = new RegexFileFilter("^\\d* " + player.getUniqueId() + gateName + "$");
                             File[] files = dir.listFiles(fileFilter);
-                            assert files != null;
+                            if (files == null) return true;
                             if (files.length == 0) {
                                 dir = new File(dir, EthosGates.getCurrentGateID() + " " + player.getUniqueId() + gateName + "/schematics/");
                                 dir.mkdirs();
@@ -129,7 +125,7 @@ public class Commands implements CommandExecutor {
                             player.sendMessage("§7Das Tor §8" + gateName + " §7wurde erfolgreich erstellt.");
                         } else {
                             EthosGates.getGateManager().deleteGate(new File(gateDir));
-                            player.sendMessage("§cUnerwarteter Fehler beim erstellen des Tors. §4§lVersuche es bitte erneut und achte darauf, dass das Tor beim Erstellen geschlossen ist. §r§cSollte dieser Fehler trotzdem wieder auftreten, wende dich bitte an den Support (/ch s)");
+                            player.sendMessage("§cUnerwarteter Fehler beim erstellen des Tors. §4§lVersuche es bitte erneut und achte darauf, dass das Tor beim Erstellen geschlossen ist und nur aus legalen Blöcken besteht. §r§cSollte dieser Fehler trotzdem wieder auftreten, wende dich bitte an den Support (/ch s)");
                         }
                         break;
                     }
@@ -140,8 +136,8 @@ public class Commands implements CommandExecutor {
                         if (Objects.requireNonNull(dir.listFiles(fileFilter)).length == 0) {
                             player.sendMessage(ChatColor.YELLOW + "Du hast noch kein Tor erstellt!");
                         }
-                        assert files != null;
-                        if (files.length == 0) return false;
+                        if (files == null) return false;
+                        if (files.length == 0) return true;
                         if (files.length == 1) {
                             player.sendMessage("§6Dein Tor:");
                         } else {
@@ -175,18 +171,8 @@ public class Commands implements CommandExecutor {
                         player.sendMessage("§eVerwende den §6/tor erstellen §eBefehl, um ein Tor zu speichern. Platziere nun ein Schild in die Nähe des Tors und schreibe in die erste Zeile §6[TOR] §eund in die zweite Zeile den §6Tornamen§e, den du zuvor vergeben hast. Jetzt kannst du mit einem §6Klick auf das Schild §edas Tor öffnen, oder schließen. Das Tor schließt und öffnet sich auch per §6Redstonesignal auf das Schild§e.");
                     }
                     break;
-                    case "test": {
-                        List<Entity> entitys = Bukkit.selectEntities(player, "@e[tag=test]");
-                        for (Entity entity : entitys) {
-                            entity.teleport(player.getLocation());
-                        }
-                        Location playerLocation = player.getLocation();
-                        Location location = new Location(player.getWorld(), playerLocation.getX(), playerLocation.getY() - 1, playerLocation.getZ());
-                        Block block = location.getBlock();
-                    }
-                    break;
                     default: {
-                        player.sendMessage("§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e>");
+                        player.sendMessage("§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e|§6hilfe§e>");
                         return false;
                     }
                 }

@@ -1,6 +1,6 @@
 package ethosgates.ethosgates;
 
-import ethosgates.ethosgates.Commands.GateTabCompleter;
+import ethosgates.ethosgates.Commands.TabCompleter;
 import ethosgates.ethosgates.Commands.Commands;
 import ethosgates.ethosgates.Listener.ClickListener;
 import ethosgates.ethosgates.Listener.SignListener;
@@ -40,7 +40,7 @@ public final class EthosGates extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignListener(), this);
         Bukkit.getPluginManager().registerEvents(new ClickListener(), this);
         Objects.requireNonNull(getCommand("tor")).setExecutor(new Commands());
-        Objects.requireNonNull(getCommand("tor")).setTabCompleter(new GateTabCompleter());
+        Objects.requireNonNull(getCommand("tor")).setTabCompleter(new TabCompleter());
         if (config.contains("LegalBlockList")) {
            Object[] l = config.getStringList("LegalBlockList").toArray();
            legalBlockList = new BlockType[l.length];
