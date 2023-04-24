@@ -5,3 +5,4 @@ api-version: 1.19
 commands:
   tor:
     description: Befehl um Tore zu ertellen und zu löschen
+    usage: "§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e|§6hilfe§e>"
