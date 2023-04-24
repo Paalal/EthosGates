@@ -37,24 +37,26 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
                         coordinates.add(targ.getX() + " " + targ.getY() + " " + targ.getZ());
                         coordinates.add("[Torname]");
                         return coordinates;
-                    } else if (Objects.equals(args[0], "löschen")) {
+                    }
+                    if (Objects.equals(args[0], "löschen")) {
                         List<String> gateNames = new ArrayList<>();
                         File dir = new File("./plugins/EthosGates/");
                         FileFilter fileFilter = new RegexFileFilter("^.* " + player.getUniqueId() + ".*$");
                         File[] files = dir.listFiles(fileFilter);
                         if (Objects.requireNonNull(dir.listFiles(fileFilter)).length == 0) {
-                            gateNames.add(ChatColor.YELLOW + "Du hast keine Tore zum löschen.");
-                            return gateNames;
+                            return Collections.singletonList(ChatColor.YELLOW + "Du hast keine Tore zum löschen.");
                         }
-                        assert files != null;
+                        if (files == null) return Collections.singletonList("");
                         String pattern = ".*" + player.getUniqueId();
                         for (File file : files) {
                             String gateName = file.toString().replaceAll(pattern, "");
                             gateNames.add(gateName);
                         }
                         return gateNames;
-                    } else return Collections.singletonList("");
-                case 3: if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
+                    }
+                    return Collections.singletonList("");
+                case 3:
+                    if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
                     if (!Objects.equals(args[1], targ.getX() + "")) return Collections.singletonList("[ÜberhangHöhe]");
                     List<String> coordinates = new ArrayList<>();
                     coordinates.add(targ.getY() + "");
