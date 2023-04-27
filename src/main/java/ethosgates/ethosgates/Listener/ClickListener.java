@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ClickListener implements Listener {
     
-private int activations = 0;
+private static int activations = 0;
 private static Boolean activated = false;
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent e) {
