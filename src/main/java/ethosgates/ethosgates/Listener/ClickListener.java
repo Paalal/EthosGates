@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class ClickListener implements Listener {
+    
+private int activations = 0;
 private static Boolean activated = false;
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent e) {
@@ -21,10 +23,13 @@ private static Boolean activated = false;
     }
 
     public static void activate() {
+        activatons++;
         activated = true;
     }
 
     public static void deactivate() {
-        activated = false;
+        if (--activations == 0) {
+            activated = false;
+        }
     }
 }
