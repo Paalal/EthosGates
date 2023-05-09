@@ -112,6 +112,21 @@ public final class EthosGates extends JavaPlugin {
             saveConfig();
         }
         gateManager = new GateManager();
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+        System.out.println("test");
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            System.out.println("");
+            System.out.println("WordGuard enabled");
+        }
+        if (getServer().getPluginManager().isPluginEnabled("Lands")) {
+            System.out.println("");
+            System.out.println("Lands enabled");
+        }
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
     }
 
     public static EthosGates getInstance() {

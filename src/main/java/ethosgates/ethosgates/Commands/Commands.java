@@ -1,8 +1,7 @@
 package ethosgates.ethosgates.Commands;
 
 import ethosgates.ethosgates.EthosGates;
-import ethosgates.ethosgates.utils.ClickInfo;
-import ethosgates.ethosgates.utils.PlayerClickCordsGetter;
+import ethosgates.ethosgates.utils.playerClickCoordsGetter;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -22,8 +21,6 @@ import java.util.*;
 
 
 public class Commands implements CommandExecutor {
-    private static final List<ClickInfo> clickInfoList = new ArrayList<>();
-
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
         if (!(command.getName().equalsIgnoreCase("tor"))) return true;
@@ -61,7 +58,7 @@ public class Commands implements CommandExecutor {
                         player.sendMessage("§cDu hats schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
                         return true;
                     }
-                    new PlayerClickCordsGetter(player).clickCreateGate(overhang, dir);
+                    new playerClickCoordsGetter(player).clickCreateGate(overhang, dir);
                     return true;
                 }
 

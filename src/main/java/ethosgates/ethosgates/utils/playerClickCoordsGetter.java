@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PlayerClickCordsGetter {
+public class playerClickCoordsGetter {
     private static List<ClickInfo> clickInfoList;
     private final Player player;
 
-    public PlayerClickCordsGetter(Player player) {
+    public playerClickCoordsGetter(Player player) {
         this.player = player;
     }
 

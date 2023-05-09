@@ -1,6 +1,6 @@
 package ethosgates.ethosgates.Listener;
 
-import ethosgates.ethosgates.utils.PlayerClickCordsGetter;
+import ethosgates.ethosgates.utils.playerClickCoordsGetter;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,8 +18,9 @@ private static Boolean activated = false;
         if (!activated) return;
         Player player = e.getPlayer();
         Block block = e.getClickedBlock();
+        if (block == null) return;
         if(block.getState().getBlockData().getMaterial().equals(Material.AIR)) return;
-        PlayerClickCordsGetter.addClickInfo(player, block.getX(), block.getY(), block.getZ());
+        playerClickCoordsGetter.addClickInfo(player, block.getX(), block.getY(), block.getZ());
     }
 
     public static void activate() {

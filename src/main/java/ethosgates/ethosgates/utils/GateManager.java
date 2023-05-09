@@ -38,6 +38,7 @@ public class GateManager {
     private BlockType[] legalBlockList = EthosGates.getLegalBlockList();
 
     public boolean toggleGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos, final Player p) {
+        p.sendMessage("Toggle");
         File dir = new File("./plugins/EthosGates/");
         FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
         File[] files = dir.listFiles(fileFilter);

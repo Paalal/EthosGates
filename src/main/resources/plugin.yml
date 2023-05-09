@@ -2,7 +2,16 @@ name: EthosGates
 version: '${project.version}'
 main: ethosgates.ethosgates.EthosGates
 api-version: 1.19
+depend:
+  - WorldEdit
+softdepend:
+  - Lands
+  - WorldGuard
 commands:
   tor:
     description: Befehl um Tore zu ertellen und zu löschen
     usage: "§cAnwendung: §6/tor §e<§6erstellen§e|§6löschen§e|§6auflisten§e|§6hilfe§e>"
+    permission: ethosgates3.use
+permissions:
+  ethosgates3.use:
+    default: op
