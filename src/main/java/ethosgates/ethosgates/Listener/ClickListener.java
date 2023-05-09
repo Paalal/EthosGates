@@ -24,7 +24,7 @@ private static Boolean activated = false;
     }
 
     public static void activate() {
-        activatons++;
+        activations++;
         activated = true;
     }
 
