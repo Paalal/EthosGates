@@ -1,53 +1,52 @@
 package ethosgates.ethosgates.utils;
 
 import ethosgates.ethosgates.EthosGates;
-import ethosgates.ethosgates.Listener.ClickListener;
 
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.sk89q.worldedit.math.BlockVector3;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-public class playerClickCoordsGetter {
-    private static List<ClickInfo> clickInfoList;
+public class GateClickCreator implements Listener {
     private final Player player;
+    private int[] clickInfo = null;
+    GateClickCreator gateClickCreator = this;
 
-    public playerClickCoordsGetter(Player player) {
+    public GateClickCreator(Player player) {
         this.player = player;
     }
 
-    public void clickCreateGate(int overhang, File dir) {
+    public void clickCreateGate(int overhang, @NotNull File dir) {
         player.sendMessage("§7Klicke zwei diagonal gegenüberliegende Ecken des Tors an");
-        EthosGates.increaseCurrentGateID();
-        clickInfoList = new ArrayList<>();
         new BukkitRunnable() {
             int repetitions = 0;
+            final String gateDir = dir.toString().replace("/schematics", "").replace("\\schematics", "");
             int[] x = null;
             int[] y = null;
             int[] z = null;
-            final String gateDir = dir.toString().replace("/schematics", "").replace("\\schematics", "");
             @Override
             public void run() {
-                ClickListener.activate();
-                for(int i = 0; i<clickInfoList.size();i++) {
-                    ClickInfo clickInfo = clickInfoList.get(i);
-                    if (!clickInfo.getPlayer().equals(player)) return;
+
+                if (!(clickInfo == null)) {
                     if (x == null) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                        x = new int[]{clickInfo.getX(), 0};
-                        y = new int[]{clickInfo.getY(), 0};
-                        z = new int[]{clickInfo.getZ(), 0};
+                        x = new int[] {clickInfo[0], 0};
+                        y = new int[] {clickInfo[1], 0};
+                        z = new int[] {clickInfo[2], 0};
+                        clickInfo = null;
                     } else {
-                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                        x[1] = clickInfo.getX();
-                        y[1] = clickInfo.getY();
-                        z[1] = clickInfo.getZ();
+                        x[1] = clickInfo[0];
+                        y[1] = clickInfo[1];
+                        z[1] = clickInfo[2];
                         Arrays.sort(x);
                         Arrays.sort(y);
                         Arrays.sort(z);
@@ -57,7 +56,6 @@ public class playerClickCoordsGetter {
                         if (!(overhang < max.getY() - min.getY() - 1)) {
                             player.sendMessage("§cIm offenen Zustand muss das Tor mindestens §43 Blöcke hoch frei §csein. ");
                             EthosGates.getGateManager().deleteGate(new File(gateDir));
-                            ClickListener.deactivate();
                             cancel();
                             return;
                         }
@@ -65,36 +63,38 @@ public class playerClickCoordsGetter {
                         if (!(((max.getX() == min.getX() && max.getZ() - min.getZ() > 0 && (max.getZ() - min.getZ()) * (max.getY() - min.getY()) < 100) || (max.getZ() == min.getZ() && max.getX() - min.getX() > 0 && (max.getX() - min.getX()) * (max.getY() - min.getY()) < 100)) && max.getY() - min.getY() > 1)) {
                             player.sendMessage("§cDas Tor muss mindestens §43 Blöcke hoch §cund §42 Blöcke breit §csein, aber §4nicht größer als 100 Blöcke§c!");
                             EthosGates.getGateManager().deleteGate(new File(gateDir));
-                            ClickListener.deactivate();
                             cancel();
                             return;
                         }
+
                         if (EthosGates.getGateManager().createGate(player, max, min, overhang, dir)) {
                             player.sendMessage("§7Das Tor wurde erfolgreich erstellt.");
                         } else {
                             EthosGates.getGateManager().deleteGate(new File(gateDir));
                             player.sendMessage("§cUnerwarteter Fehler beim erstellen des Tors. §4§lVersuche es bitte erneut und achte darauf, dass das Tor beim Erstellen geschlossen ist. §r§cSollte dieser Fehler trotzdem wieder auftreten, wende dich bitte an den Support (/ch s)");
                         }
-                        ClickListener.deactivate();
                         cancel();
+                        EthosGates.getInstance().unregisterGateClickCreator(gateClickCreator);
                     }
-                    clickInfoList.remove(clickInfo);
                 }
-                if (repetitions++ >= 200) {
+
+                if (++repetitions == 200) {
                     EthosGates.getGateManager().deleteGate(new File(gateDir));
                     player.sendMessage("§cTor Erstellung abgelaufen");
-                    ClickListener.deactivate();
+                    EthosGates.getInstance().unregisterGateClickCreator(gateClickCreator);
                     cancel();
                 }
             }
         }.runTaskTimer(EthosGates.getInstance(), 0, 1);
     }
 
-    public static void addClickInfo(Player p, int x, int y, int z) {
-        ClickInfo clickInfo = new ClickInfo(p, x, y, z);
-        for (ClickInfo clIn : clickInfoList) {
-            if (Arrays.equals(new int[]{clickInfo.getX(), clickInfo.getY(), clickInfo.getZ()}, new int[]{clIn.getX(), clIn.getY(), clIn.getZ()})) return;
-        }
-        clickInfoList.add(clickInfo);
+    @EventHandler
+    public void playerClickEvent(PlayerInteractEvent e) {
+        if (!(e.getPlayer() == player)) return;
+        Block block = e.getClickedBlock();
+        if (block == null) return;
+        if(block.getState().getBlockData().getMaterial().equals(Material.AIR)) return;
+        clickInfo = new int[] {block.getX(), block.getY(), block.getZ()};
+        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
     }
 }

@@ -337,7 +337,9 @@ public class GateManager {
             config.save(file);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        EthosGates.increaseCurrentGateID();
         return true;
     }
 

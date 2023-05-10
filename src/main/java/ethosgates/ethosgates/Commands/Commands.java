@@ -1,7 +1,7 @@
 package ethosgates.ethosgates.Commands;
 
 import ethosgates.ethosgates.EthosGates;
-import ethosgates.ethosgates.utils.playerClickCoordsGetter;
+import ethosgates.ethosgates.utils.GateClickCreator;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -58,7 +58,9 @@ public class Commands implements CommandExecutor {
                         player.sendMessage("§cDu hats schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
                         return true;
                     }
-                    new playerClickCoordsGetter(player).clickCreateGate(overhang, dir);
+                    GateClickCreator gateClickCreator = new GateClickCreator(player);
+                    EthosGates.getInstance().registerGateClickCreator(gateClickCreator);
+                    gateClickCreator.clickCreateGate(overhang, dir);
                     return true;
                 }
 
@@ -118,7 +120,6 @@ public class Commands implements CommandExecutor {
                 }
 
                 if (EthosGates.getGateManager().createGate(player, max, min, overhang, dir)) {
-                    EthosGates.increaseCurrentGateID();
                     player.sendMessage("§7Das Tor §8" + gateName + " §7wurde erfolgreich erstellt.");
                 } else {
                     EthosGates.getGateManager().deleteGate(new File(gateDir));

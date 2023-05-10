@@ -2,15 +2,16 @@ package ethosgates.ethosgates;
 
 import ethosgates.ethosgates.Commands.TabCompleter;
 import ethosgates.ethosgates.Commands.Commands;
-import ethosgates.ethosgates.Listener.ClickListener;
 import ethosgates.ethosgates.Listener.SignListener;
 import ethosgates.ethosgates.utils.GateManager;
 
 import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 
+import ethosgates.ethosgates.utils.GateClickCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
@@ -38,7 +39,6 @@ public final class EthosGates extends JavaPlugin {
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(new SignListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ClickListener(), this);
         Objects.requireNonNull(getCommand("tor")).setExecutor(new Commands());
         Objects.requireNonNull(getCommand("tor")).setTabCompleter(new TabCompleter());
         if (config.contains("LegalBlockList")) {
@@ -112,21 +112,14 @@ public final class EthosGates extends JavaPlugin {
             saveConfig();
         }
         gateManager = new GateManager();
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-        System.out.println("test");
-        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
-            System.out.println("");
-            System.out.println("WordGuard enabled");
-        }
-        if (getServer().getPluginManager().isPluginEnabled("Lands")) {
-            System.out.println("");
-            System.out.println("Lands enabled");
-        }
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
+    }
+
+    public void registerGateClickCreator(GateClickCreator gateClickCreator) {
+        Bukkit.getPluginManager().registerEvents(gateClickCreator, this);
+    }
+
+    public void unregisterGateClickCreator(GateClickCreator gateClickCreator) {
+        HandlerList.unregisterAll(gateClickCreator);
     }
 
     public static EthosGates getInstance() {
