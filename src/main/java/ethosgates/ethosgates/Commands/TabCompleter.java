@@ -19,11 +19,11 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
     @Override
     public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String alias, final String[] args) {
         if (!(sender instanceof Player)) return null;
-        Player player = (Player) sender;
-        Block targetBlock = player.getTargetBlock(null, 5);
+        final Player player = (Player) sender;
+        final Block targetBlock = player.getTargetBlock(null, 5);
+        final List<String> arguments = new ArrayList<>();
         switch (args.length) {
             case 1:
-                List<String> arguments = new ArrayList<>();
                 arguments.add("erstellen");
                 arguments.add("löschen");
                 arguments.add("auflisten");
@@ -31,12 +31,11 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
                 return arguments;
             case 2:
                 if (Objects.equals(args[0], "erstellen")) {
-                    List<String> coordinates = new ArrayList<>();
-                    coordinates.add(targetBlock.getX() + "");
-                    coordinates.add(targetBlock.getX() + " " + targetBlock.getY());
-                    coordinates.add(targetBlock.getX() + " " + targetBlock.getY() + " " + targetBlock.getZ());
-                    coordinates.add("[Torname]");
-                    return coordinates;
+                    arguments.add(targetBlock.getX() + "");
+                    arguments.add(targetBlock.getX() + " " + targetBlock.getY());
+                    arguments.add(targetBlock.getX() + " " + targetBlock.getY() + " " + targetBlock.getZ());
+                    arguments.add("[Torname]");
+                    return arguments;
                 }
                 if (Objects.equals(args[0], "löschen")) {
                     List<String> gateNames = new ArrayList<>();
@@ -58,29 +57,25 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
             case 3:
                 if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
                 if (!Objects.equals(args[1], targetBlock.getX() + "")) return Collections.singletonList("[ÜberhangHöhe]");
-                List<String> coordinates = new ArrayList<>();
-                coordinates.add(targetBlock.getY() + "");
-                coordinates.add(targetBlock.getY() + " " + targetBlock.getZ());
-                return coordinates;
+                arguments.add(targetBlock.getY() + "");
+                arguments.add(targetBlock.getY() + " " + targetBlock.getZ());
+                return arguments;
             case 4:
             case 7:
                 if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
-                coordinates = new ArrayList<>();
-                coordinates.add(targetBlock.getZ() + "");
-                return coordinates;
+                arguments.add(targetBlock.getZ() + "");
+                return arguments;
             case 5:
                 if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
-                coordinates = new ArrayList<>();
-                coordinates.add(targetBlock.getX() + "");
-                coordinates.add(targetBlock.getX() + " " + targetBlock.getY());
-                coordinates.add(targetBlock.getX() + " " + targetBlock.getY() + " " + targetBlock.getZ());
-                return coordinates;
+                arguments.add(targetBlock.getX() + "");
+                arguments.add(targetBlock.getX() + " " + targetBlock.getY());
+                arguments.add(targetBlock.getX() + " " + targetBlock.getY() + " " + targetBlock.getZ());
+                return arguments;
             case 6:
                 if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
-                coordinates = new ArrayList<>();
-                coordinates.add(targetBlock.getY() + "");
-                coordinates.add(targetBlock.getY() + " " + targetBlock.getZ());
-                return coordinates;
+                arguments.add(targetBlock.getY() + "");
+                arguments.add(targetBlock.getY() + " " + targetBlock.getZ());
+                return arguments;
             case 8:
                 if (!Objects.equals(args[0], "erstellen")) return Collections.singletonList("");
                 return Collections.singletonList("[Torname]");
