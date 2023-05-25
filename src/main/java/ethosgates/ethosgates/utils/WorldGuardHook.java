@@ -20,7 +20,6 @@ public class WorldGuardHook {
     public WorldGuardHook(){}
 
     public boolean testState(Player player, World world, Sign sign) {
-        player.sendMessage("Testing");
         Location location = new Location(BukkitAdapter.adapt(world), sign.getX(), sign.getY(), sign.getZ());
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionQuery query = container.createQuery();
