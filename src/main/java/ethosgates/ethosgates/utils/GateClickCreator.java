@@ -2,6 +2,7 @@ package ethosgates.ethosgates.utils;
 
 import ethosgates.ethosgates.EthosGates;
 
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -91,9 +92,9 @@ public class GateClickCreator implements Listener {
     @EventHandler
     public void playerClickEvent(PlayerInteractEvent e) {
         if (e.getPlayer() != player) return;
-        if (!e.getAction().equals(Action.LEFT_CLICK_BLOCK) || !e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (e.getAction().equals(Action.PHYSICAL)) return;
         Block block = e.getClickedBlock();
-        if (block == null) return;
+        if (block == null || block.getState().getBlockData().getMaterial().equals(Material.AIR)) return;
         clickInfo = new int[] {block.getX(), block.getY(), block.getZ()};
         player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
     }
