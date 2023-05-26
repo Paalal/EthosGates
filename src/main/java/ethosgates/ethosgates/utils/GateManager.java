@@ -38,12 +38,13 @@ public class GateManager {
 
     public boolean toggleGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos, final Player p) {
         File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            return false;
+        File[] files = dir.listFiles();
+        if (files == null) return false;
+        for (File file : files) {
+            if (file.getPath().contains(gateID + " ")) {
+                dir = file;
+            }
         }
-        dir = Objects.requireNonNull(files)[0];
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
@@ -78,14 +79,15 @@ public class GateManager {
         }
     }
 
-    public boolean redstoneOpenGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
+    public void redstoneOpenGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            return false;
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            if (file.getPath().contains(gateID + " ")) {
+                dir = file;
+            }
         }
-        dir = Objects.requireNonNull(files)[0];
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
@@ -104,17 +106,19 @@ public class GateManager {
         }
         double distance = sqrt(((pos.getX() - m[0]) * (pos.getX() - m[0])) + ((pos.getY() - m[1]) * (pos.getY() - m[1])) + ((pos.getZ() - m[2]) * (pos.getZ() - m[2])));
         if (distance > sqrt(height * width) + 7) {
-            return false;
+            return;
         }
-        return openGate(gateID, world);
+        openGate(gateID, world);
     }
 
     public void redstoneCloseGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            return;
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            if (file.getPath().contains(gateID + " ")) {
+                dir = file;
+            }
         }
         dir = Objects.requireNonNull(files)[0];
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
@@ -143,12 +147,13 @@ public class GateManager {
     public boolean openGate(final int gateID, final org.bukkit.World world) {
         //get gate properties
         File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            return false;
+        File[] files = dir.listFiles();
+        if (files == null) return false;
+        for (File file : files) {
+            if (file.getPath().contains(gateID + " ")) {
+                dir = file;
+            }
         }
-        dir = Objects.requireNonNull(files)[0];
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
         if (!Objects.equals(Objects.requireNonNull(gateProperties.get("State")).toString(), "closed")) {
@@ -224,12 +229,13 @@ public class GateManager {
     public boolean closeGate(final int gateID, final org.bukkit.World world) {
         //get gate properties
         File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^" + gateID + " .*$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            return false;
+        File[] files = dir.listFiles();
+        if (files == null) return false;
+        for (File file : files) {
+            if (file.getPath().contains(gateID + " ")) {
+                dir = file;
+            }
         }
-        dir = Objects.requireNonNull(files)[0];
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
         if (!Objects.equals(Objects.requireNonNull(gateProperties.get("State")).toString(), "open")) {

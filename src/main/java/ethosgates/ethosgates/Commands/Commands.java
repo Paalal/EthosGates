@@ -2,7 +2,6 @@ package ethosgates.ethosgates.Commands;
 
 import ethosgates.ethosgates.EthosGates;
 import ethosgates.ethosgates.utils.GateClickCreator;
-import ethosgates.ethosgates.utils.RegexFileFilter;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -15,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.*;
 
 
@@ -23,15 +21,14 @@ public class Commands implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command, @NotNull final String label, @NotNull final String[] args) {
         if (!(command.getName().equalsIgnoreCase("tor"))) return true;
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+        if (!(sender instanceof Player player)) return true;
         if (args.length == 0) {
             return false;
         }
         switch (args[0].toLowerCase()) {
             case "erstellen": {
                 if (args.length != 2 && args.length != 3 && args.length != 8 && args.length != 9) {
-                    player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] <Überhanghöhe> §6oder /tor erstellen §e[Torname] <Überhanghöhe>");
+                    player.sendMessage("§cAnwendung: §6/tor erstellen x1 y1 z1 x2 y2 z2 §e[Torname] <Überhanghöhe> §coder §6/tor erstellen §e[Torname] <Überhanghöhe>");
                     return true;
                 }
                 int overhang = 0;
@@ -47,16 +44,26 @@ public class Commands implements CommandExecutor {
                     String gateName = args[1];
                     File dir = new File("./plugins/EthosGates/");
                     //check if gateName already exists
-                    FileFilter fileFilter = new RegexFileFilter("^\\d* " + player.getUniqueId() + gateName + "$");
-                    File[] files = dir.listFiles(fileFilter);
+                    File[] files = dir.listFiles();
                     if (files == null) return true;
-                    if (files.length == 0) {
+                    List<String> paths = new ArrayList<>();
+                    for(File file : files) {
+                        paths.add(file.getPath());
+                    }
+                    String pattern = ".*" + player.getUniqueId();
+                    List<String> gateNames = new ArrayList<>();
+                    for (String path : paths) {
+                        if (!path.contains(player.getUniqueId().toString())) continue;
+                        gateNames.add(path.replaceAll(pattern, ""));
+                    }
+                    if (gateNames.size() == 0) {
                         dir = new File(dir, EthosGates.getCurrentGateID() + " " + player.getUniqueId() + gateName + "/schematics/");
                         dir.mkdirs();
                     } else {
-                        player.sendMessage("§cDu hats schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
+                        player.sendMessage("§cDu hast schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
                         return true;
                     }
+
                     GateClickCreator gateClickCreator = new GateClickCreator(player);
                     EthosGates.getInstance().registerGateClickCreator(gateClickCreator);
                     gateClickCreator.clickCreateGate(overhang, dir);
@@ -91,14 +98,23 @@ public class Commands implements CommandExecutor {
                 String gateName = args[7];
                 File dir = new File("./plugins/EthosGates/");
                 //check if gateName already exists
-                FileFilter fileFilter = new RegexFileFilter("^\\d* " + player.getUniqueId() + gateName + "$");
-                File[] files = dir.listFiles(fileFilter);
-                assert files != null;
-                if (files.length == 0) {
+                File[] files = dir.listFiles();
+                if (files == null) return true;
+                List<String> paths = new ArrayList<>();
+                for(File file : files) {
+                    paths.add(file.getPath());
+                }
+                String pattern = ".*" + player.getUniqueId();
+                List<String> gateNames = new ArrayList<>();
+                for (String path : paths) {
+                    if (!path.contains(player.getUniqueId().toString())) continue;
+                    gateNames.add(path.replaceAll(pattern, ""));
+                }
+                if (gateNames.size() == 0) {
                     dir = new File(dir, EthosGates.getCurrentGateID() + " " + player.getUniqueId() + gateName + "/schematics/");
                     dir.mkdirs();
                 } else {
-                    player.sendMessage("§cDu hats schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
+                    player.sendMessage("§cDu hast schon ein Tor mit dem Namen §4" + gateName + " §cerstellt.");
                     return true;
                 }
 
@@ -128,21 +144,28 @@ public class Commands implements CommandExecutor {
             }
             case "auflisten": {
                 File dir = new File("./plugins/EthosGates/");
-                FileFilter fileFilter = new RegexFileFilter("^.* " + player.getUniqueId() + ".*$");
-                File[] files = dir.listFiles(fileFilter);
-                if (Objects.requireNonNull(dir.listFiles(fileFilter)).length == 0) {
-                    player.sendMessage(ChatColor.YELLOW + "Du hast noch kein Tor erstellt!");
-                }
+                File[] files = dir.listFiles();
                 if (files == null) return true;
-                if (files.length == 0) return true;
-                if (files.length == 1) {
+                List<String> paths = new ArrayList<>();
+                for(File file : files) {
+                    paths.add(file.getPath());
+                }
+                String pattern = ".*" + player.getUniqueId();
+                List<String> gateNames = new ArrayList<>();
+                for (String path : paths) {
+                    if (!path.contains(player.getUniqueId().toString())) continue;
+                    gateNames.add(path.replaceAll(pattern, ""));
+                }
+                if (gateNames.size() == 0) {
+                    player.sendMessage("§eDu noch kein Tor erstellt.");
+                    return true;
+                }
+                if (gateNames.size() == 1) {
                     player.sendMessage("§6Dein Tor:");
                 } else {
                     player.sendMessage("§6Deine Tore:");
                 }
-                String pattern = ".*" + player.getUniqueId();
-                for (File file : files) {
-                    String gateName = file.toString().replaceAll(pattern, "");
+                for (String gateName : gateNames) {
                     player.sendMessage(ChatColor.GRAY + gateName);
                 }
             }
@@ -154,14 +177,17 @@ public class Commands implements CommandExecutor {
                 }
                 String gateName = args[1];
                 File dir = new File("./plugins/EthosGates/");
-                FileFilter fileFilter = new RegexFileFilter("^\\d* " + player.getUniqueId() + gateName + "$");
-                File[] files = dir.listFiles(fileFilter);
-                if (Objects.requireNonNull(files).length == 0) {
-                    player.sendMessage("§cDas Tor §4" + gateName + " §cwurde nicht gefunden!");
-                } else {
-                    EthosGates.getGateManager().deleteGate(Objects.requireNonNull(files)[0]);
-                    player.sendMessage("§7Erfolgreich Tor §8" + gateName + " §7gelöscht.");
+                File[] files = dir.listFiles();
+                if (files == null) return true;
+                for(File file : files) {
+                    String path = file.getPath();
+                    if (path.contains(player.getUniqueId() + gateName)) {
+                        EthosGates.getGateManager().deleteGate(Objects.requireNonNull(files)[0]);
+                        player.sendMessage("§7Erfolgreich Tor §8" + gateName + " §7gelöscht.");
+                        return true;
+                    }
                 }
+                player.sendMessage("§cDas Tor §4" + gateName + " §cwurde nicht gefunden!");
             }
             break;
             case "hilfe": {

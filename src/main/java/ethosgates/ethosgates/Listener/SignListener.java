@@ -6,7 +6,6 @@ import com.sk89q.worldedit.math.BlockVector3;
 
 import ethosgates.ethosgates.utils.WorldGuardHook;
 
-import ethosgates.ethosgates.utils.RegexFileFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
@@ -18,7 +17,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.Objects;
 
 public class SignListener implements Listener {
@@ -28,22 +26,21 @@ public class SignListener implements Listener {
         if (!Objects.requireNonNull(e.getLine(0)).equalsIgnoreCase("[TOR]")) return;
         Player player = e.getPlayer();
         String gateName = e.getLine(1);
-        File dir = new File("./plugins/EthosGates/");
-        FileFilter fileFilter = new RegexFileFilter("^.* " + player.getUniqueId() + gateName + "$");
-        File[] files = dir.listFiles(fileFilter);
-        if (Objects.requireNonNull(files).length != 1) {
-            player.sendMessage("§cDu hast kein Tor mit dem Namen §4" + gateName + "§c!");
+        File[] files = new File("./plugins/EthosGates/").listFiles();
+        if (files == null) return;
+        for (File file : files) {
+            if (!file.getPath().contains(player.getUniqueId() + gateName)) continue;
+            String pattern = ".[/\\\\]plugins[/\\\\]EthosGates[/\\\\]";
+            String ID = file.toString().replaceAll(pattern, "");
+            pattern = " " + player.getUniqueId() + gateName;
+            ID = ID.replaceAll(pattern, "");
+            e.setLine(0,  "§b[TOR]");
+            e.setLine(1, "§3" + gateName);
+            e.setLine(2, ID);
+            e.setLine(3, Boolean.toString(e.getBlock().isBlockPowered()));
             return;
         }
-        dir = Objects.requireNonNull(files)[0];
-        String pattern = ".[/\\\\]plugins[/\\\\]EthosGates[/\\\\]";
-        String ID = dir.toString().replaceAll(pattern, "");
-        pattern = " " + player.getUniqueId() + gateName;
-        ID = ID.replaceAll(pattern, "");
-        e.setLine(0,  "§b[TOR]");
-        e.setLine(1, "§3" + gateName);
-        e.setLine(2, ID);
-        e.setLine(3, Boolean.toString(e.getBlock().isBlockPowered()));
+        player.sendMessage("§cDu hast kein Tor mit dem Namen §4" + gateName + "§c!");
     }
 
     @EventHandler
