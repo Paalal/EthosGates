@@ -1,6 +1,6 @@
 package ethosgates.ethosgates.Commands;
 
-import org.apache.commons.io.filefilter.RegexFileFilter;
+import ethosgates.ethosgates.utils.RegexFileFilter;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;

@@ -5,8 +5,8 @@ import ethosgates.ethosgates.EthosGates;
 import com.sk89q.worldedit.math.BlockVector3;
 
 import ethosgates.ethosgates.utils.WorldGuardHook;
-import org.apache.commons.io.filefilter.RegexFileFilter;
 
+import ethosgates.ethosgates.utils.RegexFileFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Sign;

@@ -18,7 +18,6 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockType;
 
 import ethosgates.ethosgates.EthosGates;
-import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

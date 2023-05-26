@@ -2,6 +2,7 @@ package ethosgates.ethosgates.Commands;
 
 import ethosgates.ethosgates.EthosGates;
 import ethosgates.ethosgates.utils.GateClickCreator;
+import ethosgates.ethosgates.utils.RegexFileFilter;
 
 import com.sk89q.worldedit.math.BlockVector3;
 
@@ -10,8 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import org.jetbrains.annotations.NotNull;
 
