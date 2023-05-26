@@ -1,10 +1,7 @@
 package ethosgates.ethosgates.utils;
 
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.AbstractFileFilter;
-
 import java.io.File;
-import java.io.Serializable;
+import java.io.FileFilter;
 import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -49,7 +46,7 @@ import java.util.regex.Pattern;
  *
  * @since 1.4
  */
-public class RegexFileFilter extends AbstractFileFilter implements Serializable {
+public class RegexFileFilter implements FileFilter {
 
     private static final long serialVersionUID = 4269646126155225L;
 
@@ -65,16 +62,6 @@ public class RegexFileFilter extends AbstractFileFilter implements Serializable 
             throw new IllegalArgumentException("Pattern is missing");
         }
         return Pattern.compile(pattern, flags);
-    }
-
-    /**
-     * Converts IOCase to Pattern compilation flags.
-     *
-     * @param caseSensitivity case-sensitivity.
-     * @return Pattern compilation flags.
-     */
-    private static int toFlags(final IOCase caseSensitivity) {
-        return IOCase.isCaseSensitive(caseSensitivity) ? Pattern.CASE_INSENSITIVE : 0;
     }
 
     /** The regular expression pattern that will be used to match file names. */
@@ -137,7 +124,6 @@ public class RegexFileFilter extends AbstractFileFilter implements Serializable 
      * @param name the file name
      * @return true if the file name matches one of the regular expressions
      */
-    @Override
     public boolean accept(final File dir, final String name) {
         return pattern.matcher(name).matches();
     }
@@ -153,4 +139,8 @@ public class RegexFileFilter extends AbstractFileFilter implements Serializable 
         return "RegexFileFilter [pattern=" + pattern + "]";
     }
 
+    @Override
+    public boolean accept(File pathname) {
+        return false;
+    }
 }
