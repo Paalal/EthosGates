@@ -45,6 +45,7 @@ public class GateManager {
                 dir = file;
             }
         }
+        if (!dir.isFile()) return false;
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
