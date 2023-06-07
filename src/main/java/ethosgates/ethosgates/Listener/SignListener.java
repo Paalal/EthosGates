@@ -102,7 +102,8 @@ public class SignListener implements Listener {
         int ID = Integer.parseInt(sign.getLine(2));
         BlockVector3 pos = BlockVector3.at(sign.getX(), sign.getY(), sign.getZ());
         if (!EthosGates.getGateManager().toggleGate(ID, world, pos, player)) {
-            player.sendMessage("§cEs kann mit dem Tor mit der TorID: §4" + ID + " §cnicht interagiert werden!");
+            String gateName = sign.getLine(1).replace("§3", "");
+            player.sendMessage("§cEs kann mit dem Tor mit dem Namen: §4" + gateName + " §cnicht interagiert werden!");
         }
     }
 }
