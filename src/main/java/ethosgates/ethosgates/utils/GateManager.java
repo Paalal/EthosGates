@@ -34,19 +34,20 @@ import static java.lang.Math.sqrt;
 
 public class GateManager {
 
-    private BlockType[] legalBlockList = EthosGates.getLegalBlockList();
+    private final BlockType[] legalBlockList = EthosGates.getLegalBlockList();
 
     public boolean toggleGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos, final Player p) {
         File dir = new File("./plugins/EthosGates/");
-        File[] files = dir.listFiles();
-        if (files == null) return false;
-        for (File file : files) {
-            if (file.getPath().contains(gateID + " ")) {
-                dir = file;
+        File[] dirs = dir.listFiles();
+        if (dirs == null) return false;
+        for (File directory : dirs) {
+            if (directory.getPath().contains(gateID + " ")) {
+                dir = directory;
             }
         }
-        if (!dir.isFile()) return false;
+
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
+        if (!gatePropertiesFile.exists()) return false;
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
@@ -82,14 +83,16 @@ public class GateManager {
 
     public void redstoneOpenGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
-        File[] files = dir.listFiles();
-        if (files == null) return;
-        for (File file : files) {
-            if (file.getPath().contains(gateID + " ")) {
-                dir = file;
+        File[] dirs = dir.listFiles();
+        if (dirs == null) return;
+        for (File directory : dirs) {
+            if (directory.getPath().contains(gateID + " ")) {
+                dir = directory;
             }
         }
+
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
+        if (!gatePropertiesFile.exists()) return;
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
@@ -114,15 +117,16 @@ public class GateManager {
 
     public void redstoneCloseGate(final int gateID, final org.bukkit.World world, final BlockVector3 pos) {
         File dir = new File("./plugins/EthosGates/");
-        File[] files = dir.listFiles();
-        if (files == null) return;
-        for (File file : files) {
-            if (file.getPath().contains(gateID + " ")) {
-                dir = file;
+        File[] dirs = dir.listFiles();
+        if (dirs == null) return;
+        for (File directory : dirs) {
+            if (directory.getPath().contains(gateID + " ")) {
+                dir = directory;
             }
         }
-        dir = Objects.requireNonNull(files)[0];
+
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
+        if (!gatePropertiesFile.exists()) return;
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
 
         double height = 1.0 * (int) gateProperties.get("Dimensions.Height");
@@ -155,6 +159,7 @@ public class GateManager {
                 dir = file;
             }
         }
+
         File gatePropertiesFile = new File(dir, "/gateProperties.yml");
         YamlConfiguration gateProperties = YamlConfiguration.loadConfiguration(gatePropertiesFile);
         if (!Objects.equals(Objects.requireNonNull(gateProperties.get("State")).toString(), "closed")) {
